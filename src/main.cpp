@@ -1,15 +1,28 @@
 #include <iostream>
 #include <string>
-#include "argparse.h
+#include "argparse.h"
 
 using namespace std;
 
 int main(int argc, char** argv) {
-	string[6] params;
-    for (int i = 0; i < argc; i++) {
-        params[i] = argv[i];
+	// array for storing cmd params
+	string params[argparse::MAX_ARGS];
+	if (argc > argparse::MAX_ARGS) {
+		exit(1);
 	}
-    for (int i = 0; i < argc; i++) {
-        cout << params[i];
-    }
+	// extract params to array
+   	for (int i = 0; i < argc; i++) {
+		// skip name of program
+		if (i == 0) {
+			continue;
+		}
+		params[i] = (string) argv[i];
+	}
+	
+	// create argparse object
+	try {
+		argparse args(params, argc);
+	} catch (const char* msg) {
+		cerr << msg << endl;
+	}
 }
