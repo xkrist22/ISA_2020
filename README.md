@@ -1,32 +1,24 @@
-# ISA_2020
-Napište program dns, který bude filtrovat dotazy typu A směřující na domény v rámci dodaného seznamu a jejich poddomény. Ostatní dotazy bude přeposílat v nezměněné podobě specifikovanému resolveru. Odpovědi na dříve přeposlané dotazy bude program předávat původnímu tazateli. Analýza a sestavení DNS zpráv musí být implementována přímo v programu dns. Stačí uvažovat pouze komunikaci pomocí UDP a dotazy typu A. Na jiné typu dotazů a nežádoucí dotazy odpovídejte vhodnou chybovou zprávou.
-
-Při vytváření programu je povoleno použít pouze knihovny pro práci se sokety a další obvyklé funkce používané v síťovém prostředí (jako je netinet/*, sys/*, arpa/* apod.), knihovnu pro práci s vlákny (pthread), signály, časem, stejně jako standardní knihovnu jazyka C (varianty ISO/ANSI i POSIX), C++ a STL. Jiné knihovny nejsou povoleny.
+# DNS resolver -- projekt ISA 2020
+Program DNS filtruje dotazy typu A směřující na domény v rámci dodaného seznamu a na jejich poddomény. Ostatní dotazy program přeposílá v nezměměné podobě specifikovanému resolveru. Odpovědina přeposlané dotazy program předává původnímu tazateli. 
+Program DNS podporuje pouze komunikaci UDP a dotazy typu A. Na jiné typy dotazů je odpovídáno chybovou zprávou.
 
 ## Spuštění aplikace
-Použití: `dns -s server [-p port] -f filter_file`
+Použití: `dns -s server [-p port] -f filter_file -v`
 
 Pořadí parametrů je libovolné.
-### Popis parametrů:
-- -s: IP adresa nebo doménové jméno DNS serveru (resolveru), kam se má zaslat dotaz.
-- -p port: Číslo portu, na kterém bude program očekávat dotazy. Výchozí je port 53.
-- -f filter_file: Jméno souboru obsahující nežádoucí domény.
+### Popis parametrů
+- `-s server`: IP adresa nebo doménové jméno DNS serveru (resolveru), kam se má zaslat dotaz.
+- `-p port`: Číslo portu, na kterém bude program očekávat dotazy. Výchozí je port 53.
+- `-f filter_file`: Jméno souboru obsahující nežádoucí domény.
+- `-v`: přepínač zapínající mód, v němž program vypisuje informace o překladu.
 
-## Podporované typy dotazů
+V případě, že je číslo portu neplatné, pak je využit výchozí port 53. Neplatné parametry jsou při vyhodnocování přeskočeny.
 
-Uvažujte pouze dotazy typu A, protokol UDP a libovolné protokoly nižších vrstev podporované OS. Není požadována podpora DNSSEC.
-
-## Výstup aplikace
-
-Program nebude vypisovat žádné informace. Volitelně však můžete implementovat parametr -v (verbose), při jehož uvedení bude program vypisovat informace o překladu ve vámi zvoleném formátu.
+## Limity
+Program podporuje pouze komunikaci pomocí protokolu UDP a dotazy typu A. Na jiné typy dotazů je odpovídání chybovou zprávou. Aplikace nepodporuje DNSSEC.
 
 ## Formát souboru se seznamem nežádoucích domén
+Nežádoucí domény musí být dopředu uloženy v lokálním textovém ASCII souboru. Každá doména určena k vyfiltrování musí být uvedena na samostatném řádku. Prázdné řádky a řádky začínající znakem '#' jsou ignorovány. Ignorovány jsou taktéž bílé znaky na začátku a konci řádku.
 
-Nežádoucí domény budou dopředu uloženy v lokálním textovém ASCII souboru, každá doména bude uvedena na samostatném řádku. Prázdné řádky a řádky začínající znakem '#' ignorujte. Uvažujte konce řádků používané v OS GNU/Linux, Microsoft Windows i Apple Mac OS.
-
-### Příklad souborů nežádoucích domén:
-
-- https://dbl.oisd.nl/
-- https://pgl.yoyo.org/adservers/serverlist.php?hostformat=nohtml&showintro=1
-
-
+## Soubory
+Složka `src` obsahuje zdrojové soubory, které je možné přeložit pomocí utility `make`. Podrobnější informace je možné nalézt v souboru `manual.pdf`.
