@@ -18,7 +18,7 @@ V případě, že je číslo portu neplatné, pak je využit výchozí port 53. 
 Program podporuje pouze komunikaci pomocí protokolu UDP a dotazy typu A. Na jiné typy dotazů je odpovídání chybovou zprávou. Aplikace nepodporuje DNSSEC.
 
 ## Formát souboru se seznamem nežádoucích domén
-Nežádoucí domény musí být dopředu uloženy v lokálním textovém ASCII souboru. Každá doména určena k vyfiltrování musí být uvedena na samostatném řádku. Prázdné řádky a řádky začínající znakem '#' jsou ignorovány. Ignorovány jsou taktéž bílé znaky na začátku a konci řádku.
+Nežádoucí domény musí být dopředu uloženy v lokálním textovém ASCII souboru. Každá doména určena k vyfiltrování musí být uvedena na samostatném řádku. Prázdné řádky a řádky začínající znakem `#` jsou ignorovány. Ignorovány jsou taktéž bílé znaky na začátku a konci řádku.
 
 ## Soubory
 Složka `src` obsahuje zdrojové soubory, které je možné přeložit pomocí utility `make`. Podrobnější informace je možné nalézt v souboru `manual.pdf`.
