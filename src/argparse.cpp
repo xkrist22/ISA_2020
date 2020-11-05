@@ -1,13 +1,14 @@
 #include <iostream>
 #include <string>
-#include <regex>
 #include "argparse.h"
+#include "err_handler.h"
+#include "function.h"
 
 using namespace std;
 
 argparse::argparse(string cmd_arg_arr[6], int num_of_args) {
 	// default values
-	this->port = 53;
+	this->port = DEFAULT_PORT_NUM;
 	this->filter_file_name = "";
 	this->dns_ip = "";
 	this->dns_domain_name = "";
@@ -16,15 +17,38 @@ argparse::argparse(string cmd_arg_arr[6], int num_of_args) {
 	bool load_port = false;
 	bool load_filter_file_name = false;
 
+	if (num_of_args < MIN_ARGS_POSSIBLE || num_of_args > MAX_ARGS_POSSIBLE) {
+		err_handler::handle_error(ARG_ERR);
+	}
 	// load data from cmd into argparse object
 	for (int i = 0; i < num_of_args; i++) {
 		if (load_server) {
-			// loads server ip or domain name
-			this->dns_ip = cmd_arg_arr[i];
+			if (function::valid_ip_addr(cmd_arg_arr[i])) {
+				// loads server ip
+				this->dns_ip = cmd_arg_arr[i];
+			} else if (function::valid_domain_name(cmd_arg_arr[i])) {
+				// loads server domain name
+				this->dns_domain_name = cmd_arg_arr[i];
+			} else {
+				// value is not domain name or ip address
+				err_handler::handle_error(ARG_ERR);
+			}
 			load_server = false;
 		} else if (load_port) {
-			// loads server port
-			this->port = stoi(cmd_arg_arr[i]);
+			try {
+				// loads server port
+				this->port = stoi(cmd_arg_arr[i]);
+			} catch (invalid_argument& e) {
+				// if port is not number, program uses default port number
+				err_handler::handle_error(PORT_ERR);
+				this->port = DEFAULT_PORT_NUM;
+			}
+			// check if port is in defined range
+			if (this->port < MIN_PORT_NUM || this->port > MAX_PORT_NUM) {
+				// if port is out of range, program uses default port number
+				err_handler::handle_error(PORT_ERR);
+				this->port = DEFAULT_PORT_NUM;
+			}
 			load_port = false;
 		} else if (load_filter_file_name) {
 			// loads filter file name
@@ -44,12 +68,11 @@ argparse::argparse(string cmd_arg_arr[6], int num_of_args) {
 		}
 	}
 
-	// check if filter file name was loaded
 	if (this->filter_file_name == "") {
-		throw "Filter file name missing";
-	// chekc if DNS server IP or domain name was loaded
-	} else if (this->dns_ip == "" and this->dns_domain_name == "") {
-		throw "DNS ip or domain name missing";
+		err_handler::handle_error(FILTER_FILE_NOT_EXIST_ERR);
+	}
+	if (this->dns_ip == "" && this->dns_domain_name == "") {
+		err_handler::handle_error(IP_OR_DOMAIN_NAME_ERR);
 	}
 }
 
