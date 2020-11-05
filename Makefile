@@ -7,7 +7,7 @@
 
 SRC = src
 CC = gcc
-SRC_FILES = src/argparse.cpp src/main.cpp src/err_handler.cpp src/function.cpp
+SRC_FILES = src/argparse.cpp src/main.cpp src/err_handler.cpp src/func.cpp src/filter.cpp
 TEST_FILES = test/unit_test.cpp
 
 dns:
