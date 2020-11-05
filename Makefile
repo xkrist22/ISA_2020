@@ -13,6 +13,5 @@ TEST_FILES = test/unit_test.cpp
 dns:
 	$(CC) $(SRC_FILES) -lstdc++ -o dns
 
-test:
-	$(CC) $(SRC_FILES) $(TEST_FILES) -lstdc++ -o test
-	./test
+test: dns
+	./test.sh
