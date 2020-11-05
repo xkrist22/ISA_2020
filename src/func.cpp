@@ -6,9 +6,8 @@
 using namespace std;
 
 int func::valid_ip_addr(string ip_addr) {
-	regex ipv4_regex(
-			"(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])");
-	regex ipv6_regex("((([0-9a-fA-F]){1,4})\\:){7}([0-9a-fA-F]){1,4}");
+	regex ipv4_regex("(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])"); 
+	regex ipv6_regex("((([0-9a-fA-F]){1,4})\\:){7}([0-9a-fA-F]){1,4}"); 
 	if (regex_match(ip_addr, ipv4_regex)) {
 		return IPV4;
 	} else if (regex_match(ip_addr, ipv6_regex)) {

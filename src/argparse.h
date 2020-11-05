@@ -20,45 +20,34 @@ using namespace std;
  * class contains methods for parsing params from terminal
  */
 class argparse {
-public:
-	static const int MAX_ARGS = 7;
-
-	/**
-	 * Constructor of the argparse objects
-	 * @param cmd_arg_arr  array containing params given from terminal
-	 * @param num_of_args number of params given from terminal
-	 */
-	argparse(string cmd_arg_arr[6], int num_of_args);
-
-	/**
-	 * Getter method for returning DNS server IP
-	 * @return string containing IP address of server. If IP address is not set, returns empty string
-	 */
-	string get_server_ip();
-
-	/**
-	 * Getter method for returning DNS domain name
-	 * @return string containing domain name of server. If domain name is not set, returns empty string
-	 */
-	string get_server_domain_name();
-
-	/**
-	 * Getter method for returning port number
-	 * @return selected port number
-	 */
-	int get_server_port();
-
-	/**
-	 * Getter method for returning filter file name
-	 * @return name of the file with URLs to filter
-	 */
-	string get_filter_file_name();
-
-private:
-	string dns_ip;
-	string dns_domain_name;
-	int port;
-	string filter_file_name;
+	public:
+		static const int MAX_ARGS = 7;
+		/**
+		 * Constructor of the argparse objects
+		 * @param cmd_arg_arr  array containing params given from terminal
+		 * @param num_of_args number of params given from terminal
+		 */
+		argparse(string cmd_arg_arr[6], int num_of_args);
+		/**
+		 * Getter method for returning DNS server IP
+		 * @return string containing IP address of server. If IP address is not set, returns empty string
+		 */
+		string get_server_ip();
+		/**
+		 * Getter method for returning port number
+		 * @return selected port number
+		 */
+		int get_server_port();
+		/**
+		 * Getter method for returning filter file name
+		 * @return name of the file with URLs to filter
+		 */
+		string get_filter_file_name();
+	private:
+		string dns_ip;
+		int port;
+		string filter_file_name;
+		bool verbose_enable;
 };
 
 #endif // argparse_H

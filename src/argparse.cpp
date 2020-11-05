@@ -1,8 +1,12 @@
-#include <iostream>
 #include <string>
+#include <netdb.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include "argparse.h"
 #include "err_handler.h"
 #include "func.h"
+#include "verbose.h"
 
 using namespace std;
 
@@ -11,7 +15,7 @@ argparse::argparse(string cmd_arg_arr[6], int num_of_args) {
 	this->port = DEFAULT_PORT_NUM;
 	this->filter_file_name = "";
 	this->dns_ip = "";
-	this->dns_domain_name = "";
+	verbose::is_enable = false;
 
 	bool load_server = false;
 	bool load_port = false;
@@ -27,18 +31,25 @@ argparse::argparse(string cmd_arg_arr[6], int num_of_args) {
 				// loads server ip
 				this->dns_ip = cmd_arg_arr[i];
 			} else if (func::valid_domain_name(cmd_arg_arr[i])) {
-				// loads server domain name
-				this->dns_domain_name = cmd_arg_arr[i];
+				// get ip from domain name
+				hostent* temp = gethostbyname(cmd_arg_arr[i].c_str());
+				if (temp == NULL) {
+					err_handler::handle_error(IP_OR_DOMAIN_NAME_ERR);
+				}
+				// load ip into string so it can be stored
+				string temp_str(inet_ntoa(*((struct in_addr*) temp->h_addr_list[0])));
+				this->dns_ip = temp_str;
 			} else {
 				// value is not domain name or ip address
-				err_handler::handle_error(ARG_ERR);
+				err_handler::handle_error(IP_OR_DOMAIN_NAME_ERR);
 			}
+			verbose::print_argparse_state(DNS_SERVER_IP_SET, this->dns_ip);
 			load_server = false;
 		} else if (load_port) {
 			try {
 				// loads server port
 				this->port = stoi(cmd_arg_arr[i]);
-			} catch (invalid_argument &e) {
+			} catch (invalid_argument& e) {
 				// if port is not number, program uses default port number
 				err_handler::handle_error(PORT_ERR);
 				this->port = DEFAULT_PORT_NUM;
@@ -49,10 +60,12 @@ argparse::argparse(string cmd_arg_arr[6], int num_of_args) {
 				err_handler::handle_error(PORT_ERR);
 				this->port = DEFAULT_PORT_NUM;
 			}
+			verbose::print_argparse_state(USER_PORT_SET, to_string(this->port));
 			load_port = false;
 		} else if (load_filter_file_name) {
 			// loads filter file name
 			this->filter_file_name = cmd_arg_arr[i];
+			verbose::print_argparse_state(FILE_NAME_SET, this->filter_file_name);
 			load_filter_file_name = false;
 		}
 
@@ -65,13 +78,15 @@ argparse::argparse(string cmd_arg_arr[6], int num_of_args) {
 		} else if (cmd_arg_arr[i] == "-f") {
 			// activate loading filter file name
 			load_filter_file_name = true;
+		} else if (cmd_arg_arr[i] == "-v") {
+			verbose::is_enable = true;
 		}
 	}
 
 	if (this->filter_file_name == "") {
 		err_handler::handle_error(FILTER_FILE_NOT_EXIST_ERR);
 	}
-	if (this->dns_ip == "" && this->dns_domain_name == "") {
+	if (this->dns_ip == "") {
 		err_handler::handle_error(IP_OR_DOMAIN_NAME_ERR);
 	}
 }
@@ -80,9 +95,6 @@ string argparse::get_server_ip() {
 	return this->dns_ip;
 }
 
-string argparse::get_server_domain_name() {
-	return this->dns_domain_name;
-}
 
 int argparse::get_server_port() {
 	return this->port;
