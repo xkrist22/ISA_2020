@@ -1,4 +1,4 @@
-# DNS resolver -- projekt ISA 2020
+# DNS resolver – projekt ISA 2020
 Program DNS filtruje dotazy typu A směřující na domény v rámci dodaného seznamu a na jejich poddomény. Ostatní dotazy program přeposílá v nezměměné podobě specifikovanému resolveru. Odpovědina přeposlané dotazy program předává původnímu tazateli. 
 Program DNS podporuje pouze komunikaci UDP a dotazy typu A. Na jiné typy dotazů je odpovídáno chybovou zprávou.
 
