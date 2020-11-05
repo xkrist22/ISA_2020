@@ -44,17 +44,18 @@ using namespace std;
  * class contains methods for handling errors
  */
 class err_handler {
-	public:
-        /**
-         * Static method for handling errors
-         * @param err_code code specifying error
-         */
-		static void handle_error(int err_code);
-	private:
-        /**
-         * Method for printing help. Help is printed automatically after some errors
-         */
-		static void print_help();
+public:
+	/**
+	 * Static method for handling errors
+	 * @param err_code code specifying error
+	 */
+	static void handle_error(int err_code);
+
+private:
+	/**
+	 * Method for printing help. Help is printed automatically after some errors
+	 */
+	static void print_help();
 };
 
 #endif // err_handler_H

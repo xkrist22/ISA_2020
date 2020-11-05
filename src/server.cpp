@@ -30,7 +30,7 @@ void server::open_and_bind_socket() {
 	verbose::print_server_state(SERVER_SOCKET_OPEN, "");
 
 	// bind socket to port
-	if (bind(this->socket_descriptor, (struct sockaddr*)&this->server_socket, sizeof(this->server_socket)) == -1) {
+	if (bind(this->socket_descriptor, (struct sockaddr *) &this->server_socket, sizeof(this->server_socket)) == -1) {
 		err_handler::handle_error(SERVER_SOCKET_BIND_ERR);
 	}
 	verbose::print_server_state(SERVER_SOCKET_BIND, to_string(ntohs(this->server_socket.sin_port)));
@@ -42,9 +42,16 @@ void server::run_server() {
 	int bytes_num;
 	char temp_buffer[BUFFER_SIZE];
 	int sending_control_value;
-	while ((bytes_num = recvfrom(this->socket_descriptor, temp_buffer, BUFFER_SIZE, 0, (struct sockaddr*)&this->client_socket, &length)) >= 0) {
+	while ((bytes_num = recvfrom(this->socket_descriptor, temp_buffer, BUFFER_SIZE, 0,
+								 (struct sockaddr *) &this->client_socket, &length)) >= 0) {
 		verbose::print_server_state(MSG_RECIEVED, inet_ntoa(this->client_socket.sin_addr));
-		sending_control_value = sendto(this->socket_descriptor, temp_buffer, bytes_num, 0, (struct sockaddr*)&this->client_socket, length);
+
+		/*
+		 * TODO: parse packet, ...
+		 */
+
+		sending_control_value = sendto(this->socket_descriptor, temp_buffer, bytes_num, 0,
+									   (struct sockaddr *) &this->client_socket, length);
 		if (sending_control_value == -1) {
 			err_handler::handle_error(SERVER_CANNOT_SEND_DATA_ERR);
 		} else if (sending_control_value != bytes_num) {
@@ -58,7 +65,7 @@ void server::run_server() {
 	verbose::print_terminating();
 	err_handler::handle_error(SERVER_INPUT_DATA_ERR);
 }
-	
+
 
 void parse_msg() {
 	;

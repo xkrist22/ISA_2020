@@ -44,13 +44,41 @@
 using namespace std;
 
 class verbose {
-	public:
-		static void print_argparse_state(int atgparse_state, string info);
-		static void print_filter_state(int filter_state, string info);
-		static void print_server_state(int server_state, string info);
-		static void print_question_state(bool is_filtered);
-		static void print_terminating();
-		static bool is_enable;
+public:
+	/**
+	 * Method for printing state of argparser
+	 * @param atgparse_state code representing state of argparser
+	 * @param info additional info
+	 */
+	static void print_argparse_state(int atgparse_state, string info);
+
+	/**
+	 * Method for printing state of filter file parser
+	 * @param filter_state code representing state of filter file parser
+	 * @param info additional info
+	 */
+	static void print_filter_state(int filter_state, string info);
+
+	/**
+	 * Method for printing state of server
+	 * @param server_state code representing state of server
+	 * @param info additional info
+	 */
+	static void print_server_state(int server_state, string info);
+
+	/**
+	 * Method for printing state of question answering
+	 * @param question_state code representing state of question answering
+	 */
+	static void print_question_state(int question_state);
+
+	/**
+	 * Method for printing info while terminating program
+	 */
+	static void print_terminating();
+
+	// true, if verbose mode is enabled
+	static bool is_enable;
 };
 
 #endif // verbose_H

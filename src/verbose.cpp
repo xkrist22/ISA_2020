@@ -10,7 +10,7 @@ void verbose::print_argparse_state(int argparse_state, string info) {
 		return;
 	}
 	if (argparse_state == FILE_NAME_SET) {
-		cout << " * Filter file name set: " << info <<".\n";
+		cout << " * Filter file name set: " << info << ".\n";
 	} else if (argparse_state == USER_PORT_SET) {
 		cout << " * User port number set: " << info << ".\n";
 	} else if (argparse_state == DNS_SERVER_IP_SET) {
@@ -46,7 +46,7 @@ void verbose::print_server_state(int server_state, string info) {
 }
 
 
-void verbose::print_question_state(bool question_state) {
+void verbose::print_question_state(int question_state) {
 	if (!is_enable) {
 		return;
 	}
