@@ -2,7 +2,7 @@
 #include <string>
 #include "argparse.h"
 #include "err_handler.h"
-#include "function.h"
+#include "func.h"
 
 using namespace std;
 
@@ -23,10 +23,10 @@ argparse::argparse(string cmd_arg_arr[6], int num_of_args) {
 	// load data from cmd into argparse object
 	for (int i = 0; i < num_of_args; i++) {
 		if (load_server) {
-			if (function::valid_ip_addr(cmd_arg_arr[i])) {
+			if (func::valid_ip_addr(cmd_arg_arr[i])) {
 				// loads server ip
 				this->dns_ip = cmd_arg_arr[i];
-			} else if (function::valid_domain_name(cmd_arg_arr[i])) {
+			} else if (func::valid_domain_name(cmd_arg_arr[i])) {
 				// loads server domain name
 				this->dns_domain_name = cmd_arg_arr[i];
 			} else {
@@ -38,7 +38,7 @@ argparse::argparse(string cmd_arg_arr[6], int num_of_args) {
 			try {
 				// loads server port
 				this->port = stoi(cmd_arg_arr[i]);
-			} catch (invalid_argument& e) {
+			} catch (invalid_argument &e) {
 				// if port is not number, program uses default port number
 				err_handler::handle_error(PORT_ERR);
 				this->port = DEFAULT_PORT_NUM;
