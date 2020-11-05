@@ -3,9 +3,16 @@
 # FIT VUT 2020
 # ISA project - DNS server
 
+.PHONY: dns test
+
 SRC = src
 CC = gcc
-SRC_FILES = src/argparse.cpp src/main.cpp src/err_handler.cpp
+SRC_FILES = src/argparse.cpp src/main.cpp src/err_handler.cpp src/function.cpp
+TEST_FILES = test/unit_test.cpp
 
 dns:
 	$(CC) $(SRC_FILES) -lstdc++ -o dns
+
+test:
+	$(CC) $(SRC_FILES) $(TEST_FILES) -lstdc++ -o test
+	./test
