@@ -1,0 +1,120 @@
+% file: manual.tex
+% author: Jiri Kristof, xkrist22
+% FIT VUT ISA project - dns resolver
+% documentation
+
+\documentclass[a4paper, 11pt]{article}
+
+
+\usepackage[czech]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[left=2cm, top=3cm, text={17cm, 24cm}]{geometry}
+\usepackage{times}
+\usepackage{graphicx}
+\usepackage[unicode]{hyperref}
+\hypersetup{
+	colorlinks = true,
+	hypertexnames = false,
+	citecolor = red
+}
+
+\begin{document}
+	\begin{titlepage}
+		\begin{center}
+			\includegraphics[width=0.77\linewidth]{FIT_logo.pdf} \\
+
+			\vspace{\stretch{0.382}}
+
+			\Huge{Projektová dokumentace} \\
+			\LARGE{\textbf{
+				DNS resolver
+			}} \\
+			\Large{Síťové aplikace a~správa sítí}
+
+			\vspace{\stretch{0.618}}
+		\end{center}
+
+		{\Large
+			\today
+			\hfill
+			Jiří Křištof (xkrist2)
+		}
+	\end{titlepage}
+	\thispagestyle{empty}
+	\tableofcontents
+	\clearpage
+	
+	\pagenumbering{arabic}
+	\setcounter{page}{1}
+
+	\section{Úvod}
+	Cílem projektu je vytvořit aplikaci dns resolver v~jazyce \texttt{C/C++}. Program naslouchá na vybraném portu~a filtruje dns dotazy. Program podporuje dotazy typu~A pomocí zaslané pomocí UDP protokolu transportní vrstvy. Pro ostatní dotazy je zaslána chybová odpověď. Program načítá~z dodaného souboru domény určené~k vyfiltrování. Pokud je~v dotaze uveden dotaz na doménové jméno (případně~i subdoménu), které je uvedeno ve filtru, pak je tento dotaz zahozen.~V opačném případě je dotaz dále přeposlán na specifikovaný dns server~a zpráva z~něj je vrácena původnímu tazateli.
+
+	\section{Teoretický základ}
+	
+
+	\section{Návrh a implementace}
+	Aplikace je rozdělena do jednotlivých souborů obsahující implementaci tříd, které implementují výsledný systém. Zdrojové soubory se nachází v adresáři \texttt{src}.
+	
+	\subsection{Parsování vstupních argumentů}
+	Parsování vstupních argumentů předané programu~z příkazového řádku zajišťuje třída \texttt{argparse}. Při vytváření instance třídy jsou konstruktoru předány veškeré parametry~z příkazové řádky. Po zpracování je možné se pomocí~k tomu určených metod dotazovat na potřebné údaje -- IP adresu dns serveru, jméno souboru obsahující filtr~a případně číslo portu. 
+	
+	V případě, že je programu předáno doménové jméno dns serveru, pak je jeho IP adresa dohledána pomocí funkce \texttt{gethostbyname}. 
+	
+	Neplatné vstupní argumenty jsou ignorovány. V případě, že je programu zadáno neplatné číslo portu, pak program využije výchozí hodnotu 53. Program končí v chybovém stavu, pokud nezíská informaci o IP adrese dns serveru a soubor obsahující filtr. 
+	
+	\subsection{Módy aplikace}
+	Aplikace může pracovat ve dvou různých režimech. Ve výchozím nastavení pracuje server v tichém režimu -- na standardní výstup nejsou vypisovány žádné informace, případné chybové hlášky jsou vypisovány na standardní chybový výstup. 
+	
+	Aplikace může být přepnuta do módu, v němž je uživatel informován o jednotlivých krocích programu zprávami směřovanými na standardní výstup. Mód může být aktivován využitím přepínače \texttt{-v}. Výpis informací je implementován třídou \texttt{verbose}.
+
+	\subsection{Zpracování souboru filtru}
+	Zpracování vstupního souboru obsahující filtr je implementováno třídou \texttt{filter}. Při vytváření objektu třídy je konstruktoru předán název souboru obsahující filtr. Konstruktor ukládá jednotlivé řádky obsahující doménová jména k vyfiltrování do vektoru textových řetězců. 
+	
+	Při zpracovávání souboru jsou vynechány prázdné řádky a řádkové komentáře začínající symbolem \texttt{\#}. Před zpracováváním každého řádku je prvně provedeno odebrání bílých znaků na začátku a na konci daného řádku.
+	
+	V případě, že soubor neexistuje, je program ukončen a na standardní chybový výstup je uvedena informace o nastalé chybě. 
+	
+	\subsection{Vytvoření serveru}
+	Zajištění síťové komunikace je implementováno pomocí třídy \texttt{server}. Konstruktoru objektu třídy server jsou předány hodnoty čísla portu, na němž má server čekat na zprávy, a ip adresa dns serveru, na nějž mají být směrovány dotazy, které nebudou vyfiltrovány. 
+	Při instanciaci je detekována verze protokolu IP. Po extrakci dat je vytvořena struktura \texttt{sockaddr\_in} reprezentující soket serveru. Soket je poté otevřen a připojen k~vybranému portu. 
+
+	Po vytvoření instance třídy server je možné spustit pomocí metody \texttt{run\_server} samotný server, který čeká na dns dotazy, které filtruje a případně přeposílá dál. Metoda také implementuje vytváření odpovědí a případných chybových zpráv. 
+	
+	V případě problému při vytváření serveru či zasílání paketů je program ukončen s určeným chybovým kódem. 
+	
+%TODO	
+	
+	\subsection{Chybové stavy}
+	Pokud se program dostane do chybového stavu, pak tento stav řeší metody třídy \texttt{err\_handler}. Třída informuje uživatele o problému. Pokud nelze dále pokračovat a chybový stav ošetřit, pak je program ukončen s chybovým návratovým kódem. Chybové kódy jsou uvedeny v tabulce \ref{tab:1}.
+	
+	\section{Překladový systém}
+	Překladový systém je vytvořen pomocí utility \texttt{make}. Tdrojové soubory je možné přeložit pomocí připojeného souboru \texttt{Makefile}. Pro překlad je využíván kompilátor \texttt{gcc}. Po překladu je v kořenovém adresáři umístěn spustitelný soubor \texttt{dns}.
+	
+	Pomocí příkazu \texttt{make test} je možné spustit testy, které byly využity při testování aplikace. 
+	
+	\section{Návod na použití}
+	%TODO
+	
+	\section{Přílohy}
+\begin{table}[h]
+\centering
+\begin{tabular}{cc}
+\textbf{Chybový kód} & \textbf{Popis chyby}                                                                                   \\ \hline
+\texttt{0}  & Program byl ukončen bez detekování chyby                                                      \\ \hline
+\texttt{1}  & Problém při parsování vstupních argumentů                                                     \\ \hline
+\texttt{2}  & Formát IP adresy je neplatný, nebo nebyla získána IP adresa\\ \hline
+\texttt{3}  & Nedefinovaná hodnota portu, program využije výchozí port 53                                   \\ \hline
+\texttt{4} & Program nenalezl uvedený soubor s filtrem                                                     \\ \hline
+\texttt{5}  & Špatná knostrukce souboru s filtrem                                                           \\ \hline
+\texttt{6}  & Chyba při otevírání soketu                                                                    \\ \hline
+\texttt{7}  & Chyba při připojení soketu na port                                                            \\ \hline
+\texttt{8}  & Chyba příchozích dat                                                                          \\ \hline
+\texttt{9}  & Chyba zaslání dat                                                                             \\ \hline
+\texttt{10} & Chyba zaslání dat – byla zaslána pouze část dat                                              
+\end{tabular}
+\caption{Návratové kódy programu}
+\label{tab:1}
+\end{table}
+
+\end{document}
