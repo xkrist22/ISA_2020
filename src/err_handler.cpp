@@ -1,45 +1,74 @@
 #include <iostream>
 #include <string>
+#include <errno.h>
+#include <stdio.h>
 #include "err_handler.h"
 
 using namespace std;
 
 void err_handler::handle_error(int err_code) {
 	// help is printed when args are incorrect
-	if (err_code == ARG_ERR) {
+	if (err_code == RUN_HELP) {
+		;//pass
+	} else if (err_code == ARG_ERR) {
 		// if program gets bad arguments, program terminates
-		cerr << "Arguments error!\n";
+		cerr << "USAGE:\n";
 	} else if (err_code == IP_OR_DOMAIN_NAME_ERR) {
 		// if ip address or domain name is invalid, program terrminates
-		cerr << "DNS server IP address or domain name error!\n";
+		cerr << " *** DNS server IP address or domain name error!\n";
 	} else if (err_code == PORT_ERR) {
 		// if there are problems with port number, program uses default settings
-		cerr << "Port number error, using default port!\n";
+		cerr << " *** Port number error, using default port!\n";
 		return;
 	} else if (err_code == FILTER_FILE_NOT_EXIST_ERR) {
 		// if filter file does not exists, program terminates
-		cerr << "Filter file does not exists!\n";
+		cerr << " *** Filter file does not exists!\n";
 	} else if (err_code == FILTER_FILE_STRUCTURE_ERR) {
 		// if filter file contains bad line, it is skipped
-		cerr << "Bad structure in filter file, skipping line!\n";
+		cerr << " *** Bad structure in filter file, skipping line!\n";
 		return;
 	} else if (err_code == SERVER_SOCKET_OPEN_ERR) {
 		// if program cannot open socket, program terminates
-		cerr << "Opening of the UDP socket failed!\n";
+		cerr << " *** Opening of the server UDP socket failed!\n";
 	} else if (err_code == SERVER_SOCKET_BIND_ERR) {
 		// if program cannot bind socket, program terminates
-		cerr << "Binding of the UDP socket failed!\n";
+		cerr << " *** Binding of the server UDP socket failed!\n";
 	} else if (err_code == SERVER_INPUT_DATA_ERR) {
 		// if program detects problem during recieving data, it terminates NORMALLY
-		cerr << "Problem during recieving, server terminates!\n";
+		cerr << " *** Problem during recieving data, server terminates!\n";
 	} else if (err_code == SERVER_CANNOT_SEND_DATA_ERR) {
 		// if program cannot send data, program terminates
-		cerr << "Problems with sending data to client, server terminates!\n";
+		cerr << " *** Problems with sending data to client, server terminates!\n";
 	} else if (err_code == SERVER_SEND_DATA_PARTIALLY_ERR) {
 		// if program send only part of data, program terminates
-		cerr << "Problems with sending data to client - buffer written partially, server terminates!\n";
+		cerr << " *** Problems with sending data to client - buffer written partially, server terminates!\n";
+	} else if (err_code == CLIENT_SOCKET_OPEN_ERR) {
+		// if program cannot open client socket, program TODO
+		cerr << " *** Opening of the client UDP socket failed!\n";
+	} else if (err_code == CLIENT_SOCKET_CONNECT_ERR) {
+		// if program cannot connect socket, program TODO
+		cerr << " *** Connecting of the client UDP socket failed!\n";
+	} else if (err_code == CLIENT_CANNOT_SEND_DATA_ERR) {
+		// if program cannot connect socket, program TODO
+		cerr << " *** Problems with sending data to server!\n";
+	} else if (err_code == CLIENT_SEND_DATA_PARTIALLY_ERR) {
+		// if program cannot send data, program TODO
+		cerr << " *** Problems with sending data to client - buffer written partially!\n";
+	} else if (err_code == CLIENT_RECIEVING_DATA_ERROR) {
+		// if program cannot recieve data, program TODO
+		cerr << " *** Problems during recieving of data!\n";
+	} else if (err_code == SOCK_NAME_ERR) {
+		// if program cannot get socket name, program TODO
+		cerr << " *** Problems with socket!\n";
+	} else if (err_code == SERVER_RECIEVING_DATA_ERR) {
+		// if program cannot get data from client, program TODO
+		cerr << " *** Problems with recieving data from client!\n";
+	} else {
+		// if unknown error code is loaded, program terminates
+		// NOTE: unknown error should not occur!
+		cerr << " *** Unknown error code!\n";
 	}
-
+	cerr << strerror(errno);
 	print_help();
 	exit(err_code);
 }

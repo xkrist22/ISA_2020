@@ -33,6 +33,18 @@
 #define SERVER_SOCKET_BIND 1
 #define MSG_RECIEVED 2
 #define MSG_SENT 3
+#define MSG_FILTERED 4
+#define MSG_TYPE_NOT_IMPLEMENTED 5
+#define SERVER_START_STATE 6
+
+/* ***************
+ * CLIENT STATE
+ * ***************/
+#define CLIENT_SOCKET_OPEN 0
+#define CLIENT_SOCKET_CONNECT 1
+#define MSG_RESEND 2
+#define MSG_ANSWERED 3
+#define CLIENT_SOCKET_CLOSE 4
 
 /* ***************
  * QUESTION STATE
@@ -65,6 +77,13 @@ public:
 	 * @param info additional info
 	 */
 	static void print_server_state(int server_state, string info);
+
+	/**
+	 * Method for printing state of client
+	 * @param client_state code representing state of client
+	 * @param info additional info
+	 */
+	static void print_client_state(int client_state, string info);
 
 	/**
 	 * Method for printing state of question answering

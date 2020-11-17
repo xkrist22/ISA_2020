@@ -5,6 +5,8 @@
 #include "func.h"
 #include "filter.h"
 #include "server.h"
+#include "client.h"
+
 
 using namespace std;
 
@@ -27,6 +29,12 @@ int main(int argc, char **argv) {
 	// create argparse object
 	argparse args(params, argc);
 	filter f(args.get_filter_file_name());
-	server s(args.get_server_port(), args.get_server_ip());
+	server s = server(args.get_server_port(), args.get_server_ip(), args.get_filter_file_name());
 	s.run_server();
+	
+	/*
+	client c = client(args.get_server_port(), args.get_server_ip());
+	c.send_data(string("Toto jsou DATA!"));
+	c.close_socket();
+	*/
 }

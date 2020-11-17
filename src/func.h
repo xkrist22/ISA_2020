@@ -76,6 +76,8 @@ public:
 	 */
 	static string rtrim(string str);
 
+
+	static string clear_str(string str);
 private:
 	// string containing every possible whitespace
 	const string WHITESPACE = " \r\t\f\v\n";

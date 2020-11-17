@@ -53,3 +53,4 @@ string func::ltrim(string str) {
 string func::rtrim(string str) {
 	return regex_replace(str, regex("\\s+$"), string(""));
 }
+
