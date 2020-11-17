@@ -34,15 +34,33 @@
 #define HEADER_LEN 12
 #define TYPE_A 1
 
-#define QR_MASK 32768
-#define OPCODE_MASK 30720
-#define AA_MASK 1024
-#define TC_MASK 512
-#define RD_MASK 256
-#define RA_MASK 128
-#define RCODE_MASK 15
+#define RCODE_MASK 0b1000000110000000
 
-// struct for dns query
+// struct for dns head flags
+typedef struct dns_flags {
+
+	u_int16_t rcode :4;
+	u_int16_t z :3;
+	u_int16_t ra :1;
+	u_int16_t rd :1;
+	u_int16_t tc :1;
+	u_int16_t aa :1;
+	u_int16_t opcode :4;
+	u_int16_t qr :1;
+/*
+	u_int16_t qr :1;
+	u_int16_t opcode :4;
+	u_int16_t aa :1;
+	u_int16_t tc :1;
+	u_int16_t rd :1;
+	u_int16_t ra :1;
+	u_int16_t z :3;
+	u_int16_t rcode :4;
+*/
+} dns_flags;
+
+
+// struct for dns head
 typedef struct dns_header {
 	u_int16_t id;
 	u_int16_t flags;
@@ -51,11 +69,6 @@ typedef struct dns_header {
 	u_int16_t nscount;
 	u_int16_t arcount;
 } dns_header;
-
-typedef struct dns_packet {
-	dns_header head;
-	char packet_data[BUFFER_SIZE];
-} dns_packet;
 
 using namespace std;
 
