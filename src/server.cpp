@@ -105,19 +105,19 @@ void server::run_server() {
 			head.flags = htons(head.flags);
 			memcpy(&temp_buffer, &head, 12);
 
-		
 			// answering the questions
 			sending_control_value = sendto(this->socket_descriptor, temp_buffer, bytes_num, 0, (struct sockaddr *) &this->client_socket, length);
 
 			// checking if answer was send
 			if (sending_control_value == -1) {
 				err_handler::handle_error(SERVER_CANNOT_SEND_DATA_ERR);
+				continue;
 			} else if (sending_control_value != bytes_num) {
 				err_handler::handle_error(SERVER_SEND_DATA_PARTIALLY_ERR);
+				continue;
 			} else {
 				verbose::print_server_state(MSG_SENT, inet_ntoa(this->client_socket.sin_addr));
 			}
-
 			// after sending packet, wait for another dns packet
 			continue;
 		}
@@ -125,19 +125,19 @@ void server::run_server() {
 		// check if domain name is in filter
 		if (this->f->should_be_filtered(domain_name)) {
 			verbose::print_server_state(MSG_FILTERED, domain_name);
-
 			head.flags = ntohs(head.flags);
 			head.flags = (unsigned short) RCODE_MASK + REFUSED;
 			head.flags = htons(head.flags);
 			memcpy(&temp_buffer, &head, 12);
-
 			sending_control_value = sendto(this->socket_descriptor, temp_buffer, bytes_num, 0, (struct sockaddr *) &this->client_socket, length);
 
 			// checking if answer was send
 			if (sending_control_value == -1) {
 				err_handler::handle_error(SERVER_CANNOT_SEND_DATA_ERR);
+				continue;
 			} else if (sending_control_value != bytes_num) {
 				err_handler::handle_error(SERVER_SEND_DATA_PARTIALLY_ERR);
+				continue;
 			} else {
 				verbose::print_server_state(MSG_SENT, inet_ntoa(this->client_socket.sin_addr));
 			}
@@ -152,6 +152,10 @@ void server::run_server() {
 			char* data_buffer;
 			int ret_len = 0;
 			data_buffer = c.send_data(temp_buffer, &ret_len);
+			// check if there are no problem on the client side
+			if (strcmp("", data_buffer) == 0) {
+				continue;
+			}
 			c.close_socket();
 
 			// answering the questions
@@ -160,8 +164,10 @@ void server::run_server() {
 			// checking if answer was send
 			if (sending_control_value == -1) {
 				err_handler::handle_error(SERVER_CANNOT_SEND_DATA_ERR);
+				continue;
 			} else if (sending_control_value != bytes_num) {
 				err_handler::handle_error(SERVER_SEND_DATA_PARTIALLY_ERR);
+				continue;
 			} else {
 				verbose::print_server_state(MSG_SENT, inet_ntoa(this->client_socket.sin_addr));
 			}

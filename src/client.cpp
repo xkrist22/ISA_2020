@@ -57,22 +57,28 @@ char* client::send_data(char data[BUFFER_SIZE], int *ret_size) {
 	// send data to server
 	int i = sendto(this->socket_descriptor, temp_buffer, sizeof(temp_buffer), 0, (struct sockaddr*) &this->server_socket, len);
 
-	if (getsockname(this->socket_descriptor,(struct sockaddr*) &this->local_socket, &len) == -1)
+	if (getsockname(this->socket_descriptor,(struct sockaddr*) &this->local_socket, &len) == -1) {
 		err_handler::handle_error(SOCK_NAME_ERR);
+		return "";
+	}
 
 
 	// check if data was sent correctly
 	if (i == -1) {
 		err_handler::handle_error(CLIENT_CANNOT_SEND_DATA_ERR);
+		return "";
+
 	} else if (i != sizeof(temp_buffer)) {
 		err_handler::handle_error(CLIENT_SEND_DATA_PARTIALLY_ERR);
+		return "";
 	}
 	verbose::print_client_state(MSG_RESEND, "");
 
 	if ((*ret_size = recvfrom(this->socket_descriptor, temp_buffer, BUFFER_SIZE, 0, (struct sockaddr*) &this->local_socket, &len)) == -1) {
 		err_handler::handle_error(CLIENT_RECIEVING_DATA_ERROR);
+		return "";
 	}
-	
+
 	verbose::print_client_state(MSG_ANSWERED, "");
 	
 	return temp_buffer;

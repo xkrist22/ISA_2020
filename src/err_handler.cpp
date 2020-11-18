@@ -43,32 +43,39 @@ void err_handler::handle_error(int err_code) {
 		// if program send only part of data, program terminates
 		cerr << " *** Problems with sending data to client - buffer written partially, server terminates!\n";
 	} else if (err_code == CLIENT_SOCKET_OPEN_ERR) {
-		// if program cannot open client socket, program TODO
+		// if program cannot open client socket, program waits for another dns packet
 		cerr << " *** Opening of the client UDP socket failed!\n";
+		return;
 	} else if (err_code == CLIENT_SOCKET_CONNECT_ERR) {
-		// if program cannot connect socket, program TODO
+		// if program cannot connect socket, program waits for another dns packet
 		cerr << " *** Connecting of the client UDP socket failed!\n";
+		return;
 	} else if (err_code == CLIENT_CANNOT_SEND_DATA_ERR) {
-		// if program cannot connect socket, program TODO
+		// if program cannot connect socket, program waits for another dns packet
 		cerr << " *** Problems with sending data to server!\n";
+		return;
 	} else if (err_code == CLIENT_SEND_DATA_PARTIALLY_ERR) {
-		// if program cannot send data, program TODO
+		// if program cannot send data, program waits for another dns packet
 		cerr << " *** Problems with sending data to client - buffer written partially!\n";
+		return;
 	} else if (err_code == CLIENT_RECIEVING_DATA_ERROR) {
-		// if program cannot recieve data, program TODO
+		// if program cannot recieve data, program waits for another dns packet
 		cerr << " *** Problems during recieving of data!\n";
+		return;
 	} else if (err_code == SOCK_NAME_ERR) {
-		// if program cannot get socket name, program TODO
+		// if program cannot get socket name, program waits for another dns packet
 		cerr << " *** Problems with socket!\n";
+		return;
 	} else if (err_code == SERVER_RECIEVING_DATA_ERR) {
-		// if program cannot get data from client, program TODO
+		// if program cannot get data from client, program waits for another dns packet
 		cerr << " *** Problems with recieving data from client!\n";
+		return;
 	} else {
 		// if unknown error code is loaded, program terminates
 		// NOTE: unknown error should not occur!
 		cerr << " *** Unknown error code!\n";
 	}
-	cerr << strerror(errno);
+	cerr << " *** errno info: " << strerror(errno) << "\n";
 	print_help();
 	exit(err_code);
 }
