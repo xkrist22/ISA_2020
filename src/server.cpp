@@ -66,8 +66,19 @@ void server::run_server() {
 		
 		// extract header from DNS packet
 		dns_header head;
-		memcpy(&head, temp_buffer, HEADER_LEN);
-		
+		memcpy(&head, temp_buffer, HEADER_LEN);	
+		head.qdcount = ntohs(head.qdcount);
+		if (head.qdcount != 1) {
+			head.qdcount = htons(head.qdcount);
+			err_handler::handle_error(QUERY_COUNT_ERR);
+	
+			head.flags = ntohs(head.flags);
+			head.flags = (unsigned short) RCODE_MASK + NOT_IMPLEMENTED;
+			head.flags = htons(head.flags);
+			memcpy(&temp_buffer, &head, 12);
+			continue;
+		}
+		head.qdcount = htons(head.qdcount);
 
 		/*
 		 * After header there is domain name. Instead of dots, there are
@@ -149,23 +160,39 @@ void server::run_server() {
 			// resend question
 	
 			client c = client(DNS_PORT_NUM, this->dns_ip_addr);
-			char* data_buffer;
-			int ret_len = 0;
-			data_buffer = c.send_data(temp_buffer, &ret_len);
-			// check if there are no problem on the client side
-			if (strcmp("", data_buffer) == 0) {
+			int ret_len = c.send_data(temp_buffer);
+
+			// if data_buffer is empty string, then there were problem on the client side
+			if (ret_len == -1) {
+				head.flags = ntohs(head.flags);
+				head.flags = (unsigned short) RCODE_MASK + SERVER_FAILURE;
+				head.flags = htons(head.flags);
+				memcpy(&temp_buffer, &head, 12);
+				sending_control_value = sendto(this->socket_descriptor, temp_buffer, bytes_num, 0, (struct sockaddr *) &this->client_socket, length);
+
+				// checking if answer was send
+				if (sending_control_value == -1) {
+					err_handler::handle_error(SERVER_CANNOT_SEND_DATA_ERR);
+					continue;
+				} else if (sending_control_value != bytes_num) {
+					err_handler::handle_error(SERVER_SEND_DATA_PARTIALLY_ERR);
+					continue;
+				} else {
+					verbose::print_server_state(MSG_SENT, inet_ntoa(this->client_socket.sin_addr));
+				}
+
 				continue;
 			}
 			c.close_socket();
 
 			// answering the questions
-			sending_control_value = sendto(this->socket_descriptor, data_buffer, bytes_num, 0, (struct sockaddr *) &this->client_socket, length);
+			sending_control_value = sendto(this->socket_descriptor, temp_buffer, ret_len, 0, (struct sockaddr *) &this->client_socket, length);
 
 			// checking if answer was send
 			if (sending_control_value == -1) {
 				err_handler::handle_error(SERVER_CANNOT_SEND_DATA_ERR);
 				continue;
-			} else if (sending_control_value != bytes_num) {
+			} else if (sending_control_value != ret_len) {
 				err_handler::handle_error(SERVER_SEND_DATA_PARTIALLY_ERR);
 				continue;
 			} else {
@@ -181,7 +208,3 @@ void server::run_server() {
 	err_handler::handle_error(SERVER_INPUT_DATA_ERR);
 }
 
-
-void parse_msg() {
-	;
-}

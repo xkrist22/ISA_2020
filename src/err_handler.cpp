@@ -35,13 +35,16 @@ void err_handler::handle_error(int err_code) {
 		cerr << " *** Binding of the server UDP socket failed!\n";
 	} else if (err_code == SERVER_INPUT_DATA_ERR) {
 		// if program detects problem during recieving data, it terminates NORMALLY
-		cerr << " *** Problem during recieving data, server terminates!\n";
+		cerr << " *** Problem during recieving data!\n";
+		return;
 	} else if (err_code == SERVER_CANNOT_SEND_DATA_ERR) {
 		// if program cannot send data, program terminates
-		cerr << " *** Problems with sending data to client, server terminates!\n";
+		cerr << " *** Problems with sending data to client!\n";
+		return;
 	} else if (err_code == SERVER_SEND_DATA_PARTIALLY_ERR) {
 		// if program send only part of data, program terminates
-		cerr << " *** Problems with sending data to client - buffer written partially, server terminates!\n";
+		cerr << " *** Problems with sending data to client - buffer written partially!\n";
+		return;
 	} else if (err_code == CLIENT_SOCKET_OPEN_ERR) {
 		// if program cannot open client socket, program waits for another dns packet
 		cerr << " *** Opening of the client UDP socket failed!\n";
@@ -69,6 +72,10 @@ void err_handler::handle_error(int err_code) {
 	} else if (err_code == SERVER_RECIEVING_DATA_ERR) {
 		// if program cannot get data from client, program waits for another dns packet
 		cerr << " *** Problems with recieving data from client!\n";
+		return;
+	} else if (err_code == QUERY_COUNT_ERR) {
+		// if dns packet contains more queries, program waits for another dns packet
+		cerr << " *** DNS packet contains more than 1 query!\n";
 		return;
 	} else {
 		// if unknown error code is loaded, program terminates

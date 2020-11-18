@@ -50,7 +50,7 @@ public:
 	 *
 	 * @return string containing answer from server
 	 */
-	char* send_data(char data[BUFFER_SIZE], int* ret_size);
+	int send_data(char data[BUFFER_SIZE]);
 
 	/**
 	 * Method for closing socket

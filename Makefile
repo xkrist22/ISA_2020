@@ -13,4 +13,4 @@ dns:
 	$(CC) $(SRC_FILES) -lstdc++ -o dns
 
 test: dns
-	./test.sh
+	bash test.sh

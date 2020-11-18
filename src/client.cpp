@@ -42,7 +42,7 @@ void client::open_and_connect_socket() {
 	}
 	verbose::print_client_state(CLIENT_SOCKET_OPEN, "");
 
-	// create UDP packet
+	// connect socket 
 	if (connect(this->socket_descriptor, (struct sockaddr *)&this->server_socket, sizeof(this->server_socket))  == -1) {
 		err_handler::handle_error(CLIENT_SOCKET_CONNECT_ERR);
 	}
@@ -50,38 +50,34 @@ void client::open_and_connect_socket() {
 }
 
 
-char* client::send_data(char data[BUFFER_SIZE], int *ret_size) {
+int client::send_data(char temp_buffer[BUFFER_SIZE]) {
 	socklen_t len = sizeof(this->server_socket);
-	static char temp_buffer[BUFFER_SIZE];
-	strcpy(temp_buffer, data);
 	// send data to server
-	int i = sendto(this->socket_descriptor, temp_buffer, sizeof(temp_buffer), 0, (struct sockaddr*) &this->server_socket, len);
+	int i = sendto(this->socket_descriptor, temp_buffer, BUFFER_SIZE, 0, (struct sockaddr*) &this->server_socket, len);
 
 	if (getsockname(this->socket_descriptor,(struct sockaddr*) &this->local_socket, &len) == -1) {
 		err_handler::handle_error(SOCK_NAME_ERR);
-		return "";
+		return -1;
 	}
 
 
 	// check if data was sent correctly
 	if (i == -1) {
 		err_handler::handle_error(CLIENT_CANNOT_SEND_DATA_ERR);
-		return "";
-
-	} else if (i != sizeof(temp_buffer)) {
+			return -1;
+	} else if (i != BUFFER_SIZE) {
 		err_handler::handle_error(CLIENT_SEND_DATA_PARTIALLY_ERR);
-		return "";
+			return -1;
 	}
 	verbose::print_client_state(MSG_RESEND, "");
 
-	if ((*ret_size = recvfrom(this->socket_descriptor, temp_buffer, BUFFER_SIZE, 0, (struct sockaddr*) &this->local_socket, &len)) == -1) {
+	if ((i = recvfrom(this->socket_descriptor, temp_buffer, BUFFER_SIZE, 0, (struct sockaddr*) &this->local_socket, &len)) == -1) {
 		err_handler::handle_error(CLIENT_RECIEVING_DATA_ERROR);
-		return "";
+			return -1;
 	}
 
 	verbose::print_client_state(MSG_ANSWERED, "");
-	
-	return temp_buffer;
+	return i;
 }
 
 

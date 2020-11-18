@@ -55,6 +55,8 @@
 #define RUN_HELP 17
 // error during recvfrom in server
 #define SERVER_RECIEVING_DATA_ERR 18
+// dns contains more queries
+#define QUERY_COUNT_ERR 19
 /* ***************
  * DNS ERROR CODES
  * ***************/

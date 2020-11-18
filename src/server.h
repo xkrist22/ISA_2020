@@ -97,12 +97,6 @@ private:
 	 */
 	void open_and_bind_socket();
 
-	/**
-	 * Method for parsing data from dns packet
-	 * @return true, of dns packet is supported, else returns false
-	 */
-	bool parse_msg();
-
 	struct sockaddr_in server_socket;
 	struct sockaddr_in client_socket;
 	int socket_descriptor;
