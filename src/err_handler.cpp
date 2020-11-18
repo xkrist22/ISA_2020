@@ -7,12 +7,15 @@
 using namespace std;
 
 void err_handler::handle_error(int err_code) {
+	cerr << " *** error code: " << err_code << "\n";
+	cerr << " *** errno info: " << strerror(errno) << "\n";
+
 	// help is printed when args are incorrect
 	if (err_code == RUN_HELP) {
 		;//pass
 	} else if (err_code == ARG_ERR) {
 		// if program gets bad arguments, program terminates
-		cerr << "USAGE:\n";
+		cerr << " *** USAGE:\n";
 	} else if (err_code == IP_OR_DOMAIN_NAME_ERR) {
 		// if ip address or domain name is invalid, program terrminates
 		cerr << " *** DNS server IP address or domain name error!\n";
@@ -30,9 +33,11 @@ void err_handler::handle_error(int err_code) {
 	} else if (err_code == SERVER_SOCKET_OPEN_ERR) {
 		// if program cannot open socket, program terminates
 		cerr << " *** Opening of the server UDP socket failed!\n";
+		exit(err_code);
 	} else if (err_code == SERVER_SOCKET_BIND_ERR) {
 		// if program cannot bind socket, program terminates
 		cerr << " *** Binding of the server UDP socket failed!\n";
+		exit(err_code);
 	} else if (err_code == SERVER_INPUT_DATA_ERR) {
 		// if program detects problem during recieving data, it terminates NORMALLY
 		cerr << " *** Problem during recieving data!\n";
@@ -82,24 +87,23 @@ void err_handler::handle_error(int err_code) {
 		// NOTE: unknown error should not occur!
 		cerr << " *** Unknown error code!\n";
 	}
-	cerr << " *** errno info: " << strerror(errno) << "\n";
 	print_help();
 	exit(err_code);
 }
 
 
 void err_handler::print_help() {
-	cerr << "dns program:\n";
-	cerr << "\tprogram filter questions of A type. If domain in question is in filter file, then";
-	cerr << "program will discard the DNS message. Else it resend question to specific DNS server";
-	cerr << "and return answer from server.\n\n";
-	cerr << "Usage:\n";
-	cerr << "\tdns -s server [-p port] -f filter_file -v\n";
-	cerr << "\t-s server: IP address or domain name of DNS server\n";
-	cerr << "\t-p port: number of port, where program waits for questions\n";
-	cerr << "\t-f filter_file: name of file containing domains to filter\n";
-	cerr << "\t-v: turn on verbose mode\n\n";
-	cerr << "Note:\n";
-	cerr << "\tProgram uses only A type and implements only UDP protocol.\n";
-	cerr << "\tIf program get unknown parameter, it is skipped.\n\n";
+	cerr << " *** dns program:\n";
+	cerr << " *** \tprogram filter questions of A type. If domain in question is in filter file, then\n";
+	cerr << " *** \tprogram will discard the DNS message. Else it resend question to specific DNS server\n";
+	cerr << " *** \tand return answer from server.\n *** \n";
+	cerr << " *** Usage:\n";
+	cerr << " *** \tdns -s server [-p port] -f filter_file -v\n";
+	cerr << " *** \t-s server: IP address or domain name of DNS server\n";
+	cerr << " *** \t-p port: number of port, where program waits for questions\n";
+	cerr << " *** \t-f filter_file: name of file containing domains to filter\n";
+	cerr << " *** \t-v: turn on verbose mode\n *** \n";
+	cerr << " *** Note:\n";
+	cerr << " *** \tProgram uses only A type and implements only UDP protocol.\n";
+	cerr << " *** \tIf program get unknown parameter, it is skipped.\n\n";
 }
